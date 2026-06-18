@@ -18,7 +18,6 @@ class Home extends BaseController
         $product = $this->productModel->findAll();
         $data['products'] = $product; 
         
-        // PERBAIKAN: Menambahkan helper 'form' di sini bersama 'url'
         helper(['url', 'form']);
         
         return view('v_home', $data);
@@ -31,6 +30,14 @@ class Home extends BaseController
 
     public function profile()
     {
-        return view('v_profile');
+        $data = [
+            'username'    => session()->get('username'),
+            'role'        => session()->get('role'),
+            'email'       => session()->get('email'),
+            'waktu_login' => session()->get('waktu_login'),
+            'status'      => session()->get('isLoggedIn') ? 'Online' : 'Offline',
+        ];
+
+        return view('v_profile', $data);
     }
 }

@@ -1,0 +1,11 @@
+### index (semua transaksi dengan filter tanggal dan pagination)
+GET http://localhost:8080/api/transactions?start=2026-06-01&end=2026-06-30&page=1&per_page=10
+Accept: application/json
+Authorization: Bearer my-secret-token
+
+###
+
+### index (tanpa filter tanggal)
+GET http://localhost:8080/api/transactions?page=1&per_page=10
+Accept: application/json
+Authorization: Bearer my-secret-token
