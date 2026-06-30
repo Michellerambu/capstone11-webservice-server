@@ -15,7 +15,7 @@ class TransaksiController extends BaseController
 
     public function __construct()
     {
-        helper(['number', 'form']);
+        helper(['number', 'form', 'diskon']);
 
         $this->cart = service('cart');
 
@@ -102,12 +102,19 @@ class TransaksiController extends BaseController
 
     public function checkout()
     {
-        $data = [
-            'items' => $this->cart->contents(),
-            'total' => $this->cart->total()
-        ];
+    $total = $this->cart->total();
 
-        return view('v_checkout', $data);
+    $diskon = hitungDiskon($total);
+
+    $data = [
+        'items'                => $this->cart->contents(),
+        'total'                => $total,
+        'diskon_persen'        => $diskon['persen'],
+        'diskon_nilai'         => $diskon['nilai'],
+        'total_setelah_diskon' => $total - $diskon['nilai']
+    ];
+
+    return view('v_checkout', $data);
     }
 
     public function destinations()
@@ -166,13 +173,24 @@ class TransaksiController extends BaseController
 
     public function buy()
     {
+        $totalHarga = $this->request->getPost('total_harga_sebelum_diskon');
+
+        $diskon = hitungDiskon($totalHarga);
+
+        $nilaiDiskon = $diskon['nilai'];
+
+        $ongkir = $this->request->getPost('ongkir');
+
+        $grandTotal = $totalHarga - $nilaiDiskon + $ongkir;
+
         $transaction = [
             'username'    => $this->request->getPost('username'),
             'alamat'      => $this->request->getPost('alamat'),
-            'ongkir'      => $this->request->getPost('ongkir'),
-            'total_harga' => $this->request->getPost('total_harga'),
+            'ongkir'      => $ongkir,
+            'diskon'      => $nilaiDiskon,
+            'total_harga' => $grandTotal,
             'status'      => 0
-        ];
+    ];
 
         $this->transactionModel->insert($transaction);
 

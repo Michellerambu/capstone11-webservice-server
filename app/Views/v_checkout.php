@@ -12,6 +12,10 @@
                value="<?= session()->get('username') ?>">
 
         <input type="hidden"
+               name="total_harga_sebelum_diskon"
+               value="<?= $total ?>">
+
+        <input type="hidden"
                name="total_harga"
                id="total_harga"
                value="">
@@ -125,11 +129,37 @@
 
             <tr>
                 <td colspan="2"></td>
-                <td>Total</td>
+                <td style="color:red;">
+                    Diskon (<?= $diskon_persen ?>%)
+                </td>
+                <td style="color:red;">
+                    - <?= number_to_currency($diskon_nilai, 'IDR') ?>
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="2"></td>
+                <td>Setelah Diskon</td>
+                <td><?= number_to_currency($total_setelah_diskon, 'IDR') ?></td>
+            </tr>
+
+            <tr>
+                <td colspan="2"></td>
+                <td>Ongkir</td>
                 <td>
-                    <span id="total">
-                        <?= number_to_currency($total, 'IDR') ?>
-                    </span>
+                    <span id="display_ongkir">Rp 0</span>
+                </td>
+            </tr>
+            
+            <tr>
+                <td colspan="2"></td>
+                <td><strong>Total</strong></td>
+                <td>
+                    <strong>
+                        <span id="total">
+                            <?= number_to_currency($total_setelah_diskon, 'IDR') ?>
+                        </span>
+                    </strong>
                 </td>
             </tr>
 
@@ -148,17 +178,18 @@
 $(document).ready(function() {
 
     let ongkir = 0;
-    let subtotal = <?= $total ?>;
+    let subtotal = <?= $total_setelah_diskon ?>;
 
     hitungTotal();
 
     function hitungTotal() {
 
-        let total = subtotal + ongkir;
+        let grandTotal = subtotal + ongkir;
 
         $("#ongkir").val(ongkir);
-        $("#total").text(`IDR ${total.toLocaleString('id-ID')}`);
-        $("#total_harga").val(total);
+        $("#display_ongkir").text(`IDR ${ongkir.toLocaleString('id-ID')}`);
+        $("#total").text(`IDR ${grandTotal.toLocaleString('id-ID')}`);
+        $("#total_harga").val(grandTotal);
     }
 
     $('#kelurahan').select2({
